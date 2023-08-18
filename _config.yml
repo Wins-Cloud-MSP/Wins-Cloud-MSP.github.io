@@ -162,7 +162,7 @@ yat:
 # Page default value
 defaults:
   home:
-    heading: "Wins Cloud MSP팀 기술 블로그"
+    heading: "Wins Cloud 기술 블로그"
     subheading: "기술 블로그"
 #    banner: "Your image url"
 
