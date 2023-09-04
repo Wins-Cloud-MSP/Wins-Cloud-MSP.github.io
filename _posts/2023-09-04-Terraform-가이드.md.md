@@ -30,18 +30,16 @@ Terraform 설치 및 사용 가이드를 기술합니다.
 1. Terminal에서 aws 명령어 동작 확인 (ex. aws --version)
 2. Configure 확인 방법 = 본인 계정 경로 (ex. C:\Users\test) 의 .aws\config, credentials 파일 확인
 
-## 2. 설치 및 환경변수 설정
+## 2. 설치 및 환경변수 설정 <br>
 1. Terraform 공식 사이트 접속하여 파일 다운로드 <br>
 [https://www.terraform.io/downloads](https://www.terraform.io/downloads)
-![image](https://github.com/Wins-Cloud-MSP/Wins-Cloud-MSP.github.io/assets/43061391/1527d98d-b583-466b-b2ef-239ab885b651)
-
 
 3. 파일 압축해제 및 환경변수 설정
 - 환경변수 설정<br> 
-![image](https://github.com/chjr68/Git_Bash/blob/main/images/2.Terraform_EnvSetting.png)
+![2 Terraform_EnvSetting](https://github.com/Wins-Cloud-MSP/Wins-Cloud-MSP.github.io/assets/43061391/1dda5026-49ab-4ddb-96f2-aa31f7d94e7e)
 
 - 설치확인 <br>
-![image](https://github.com/chjr68/Git_Bash/blob/main/images/2.Terraform_InstallCheck.png)
+![2 Terraform_InstallCheck](https://github.com/Wins-Cloud-MSP/Wins-Cloud-MSP.github.io/assets/43061391/30f232a6-8c20-4b16-9db8-23efe9ac379e)
 
 ## 3. AWS 계정 연동
 -  Terminal에서 명령어 입력 <br>
@@ -72,7 +70,7 @@ Terraform 설치 및 사용 가이드를 기술합니다.
    - resource: 리소스 생성
 
 ## 5. 샘플코드
-- [샘플코드 경로](https://github.com/chjr68/Terraform/tree/master/source)
+- [샘플코드 경로]([https://github.com/chjr68/Terraform/tree/master/source](https://github.com/Wins-Cloud-MSP/Wins-Cloud-MSP.github.io/tree/master/_source/Terraform))
 - [Terraform Docs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) <br>
 모든 옵션을 정의할 수 없으므로, 필요한 옵션은 Docs에서 찾아서 코딩
 
