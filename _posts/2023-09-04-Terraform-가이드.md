@@ -90,8 +90,7 @@ Terraform 설치 및 사용 가이드를 기술합니다.
    &nbsp; <br><br>
 - Terraforming을 통한 기존 인프라 가져오는 방법 <br>
    &nbsp; <br>
-   <사용 절차>
-  
+   (사용 절차)
    1. Terraforming 설치 <br>
    [Terraforming 설치 가이드](https://honglab.tistory.com/207) 참고
    2. 기존 인프라를 tfstate 파일에 적용 <br>
