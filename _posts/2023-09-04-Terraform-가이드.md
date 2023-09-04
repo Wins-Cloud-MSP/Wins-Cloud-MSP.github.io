@@ -72,7 +72,7 @@ Terraform 설치 및 사용 가이드를 기술합니다.
    - resource: 리소스 생성
 
 ## 5. 샘플코드
-- [샘플코드 경로]([https://github.com/chjr68/Terraform/tree/master/source](https://github.com/Wins-Cloud-MSP/Wins-Cloud-MSP.github.io/tree/master/_source/Terraform))
+- [샘플코드 경로](https://github.com/chjr68/Terraform/tree/master/source)
 - [Terraform Docs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) <br>
 모든 옵션을 정의할 수 없으므로, 필요한 옵션은 Docs에서 찾아서 코딩
 
