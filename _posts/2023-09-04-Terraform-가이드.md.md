@@ -33,8 +33,10 @@ Terraform 설치 및 사용 가이드를 기술합니다.
 ## 2. 설치 및 환경변수 설정
 1. Terraform 공식 사이트 접속하여 파일 다운로드 <br>
 [https://www.terraform.io/downloads](https://www.terraform.io/downloads)
+![image](https://github.com/Wins-Cloud-MSP/Wins-Cloud-MSP.github.io/assets/43061391/1527d98d-b583-466b-b2ef-239ab885b651)
 
-2. 파일 압축해제 및 환경변수 설정
+
+3. 파일 압축해제 및 환경변수 설정
 - 환경변수 설정<br> 
 ![image](https://github.com/chjr68/Git_Bash/blob/main/images/2.Terraform_EnvSetting.png)
 
