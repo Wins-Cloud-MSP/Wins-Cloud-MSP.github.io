@@ -11,23 +11,26 @@ tags: [DBMS, PostgreSQL]
 
 # postgres replication - streaming 구성
 ## 목차
-0. 서버 정보
+0. 서버 정보 및 복제 대상
 1. Streaming 방식
 2. Primary Server 서버 설정
 3. Standby Server 서버 설정
 4. 결과 확인  
 
-## 0. 서버 정보
+## 0. 서버 정보 및 복제 대상
 
 Replication|Primary Server|Standby Server
 ---|---|---|
 Streaming|CentOS 7.9/Postgresql 14|CentOS 7.9/Postgresql 14
 
+복제 대상
+DB, 테이블, 시퀀스, 뷰, 함수 등 Primary DB에 있는 정보들이 Standby DB로 복제
+
 ## 1. Streaming 방식
 - Streaming 복제는 PostgreSQL에서 가장 일반적으로 사용되는 방식
-- Primary Server 서버에서 변경된 로그 데이터를 Standby Server 서버로 스트리밍
-- PostgreSQL은 데이터 변경 사항을 WAL 파일에 로그로 기록합니다. 이 로그 파일은 변경 사항이 발생할 때마다  
-  생성되며 변경 사항을 안전하게 저장  
+- Primary Server 서버에서 변경된 로그 데이터를 Standby Server 서버로 스트리밍  
+- PostgreSQL은 데이터 변경 사항을 WAL 파일에 로그로 기록  
+- 로그 파일은 변경 사항이 발생할 때마다 생성되며 변경 사항을 안전하게 저장  
 - Standby 서버는 변경 로그를 실시간으로 적용하여 마스터 서버와 동일한 데이터베이스를 유지
 
 
