@@ -24,8 +24,10 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Wins-Cloud-MSP
-email: cloudmsp@wins21.co.kr
+#title: Wins-Cloud-MSP
+#email: cloudmsp@wins21.co.kr
+title: 우리들의 클라우드 기술 블로그^^
+email: test@test.com
 author: GitHub User
 
 # Copyright setting
@@ -162,7 +164,8 @@ yat:
 # Page default value
 defaults:
   home:
-    heading: "Wins Cloud 기술 블로그"
+    heading: "우리들의 Cloud 기술 블로그"
+#    heading: "Wins Cloud 기술 블로그"
     subheading: "기술 블로그"
 #    banner: "Your image url"
 
