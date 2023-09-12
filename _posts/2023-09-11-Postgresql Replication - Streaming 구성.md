@@ -20,9 +20,10 @@ tags: [DBMS, PostgreSQL]
 ## 0. 서버 정보 및 복제 대상
 
 ### 서버 정보
-Replication|Primary Server|Standby Server
+---
+Replication|Primary Server|Standby Server|
 ---|---|---|
-Streaming|CentOS 7.9/Postgresql 14|CentOS 7.9/Postgresql 14  
+Streaming|CentOS 7.9/Postgresql 14|CentOS 7.9/Postgresql 14|
 
 ---
 
