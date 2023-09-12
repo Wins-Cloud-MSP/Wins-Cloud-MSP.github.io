@@ -22,9 +22,9 @@ tags: [DBMS, PostgreSQL]
 ### 서버 정보
 Replication|Primary Server|Standby Server
 ---|---|---|
-Streaming|CentOS 7.9/Postgresql 14|CentOS 7.9/Postgresql 14
+Streaming|CentOS 7.9/Postgresql 14|CentOS 7.9/Postgresql 14  
 
-
+---
 
 ### 복제 대상
 DB, 테이블, 시퀀스, 뷰, 함수 등 Primary DB에 있는 정보들이 Standby DB로 복제
