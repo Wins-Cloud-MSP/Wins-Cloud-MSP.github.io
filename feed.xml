@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title></title>
+    <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</description>
+    <link>https://Wins-Cloud-MSP.github.io</link>
+    <atom:link href="https://Wins-Cloud-MSP.github.io/feed.xml" rel="self" type="application/rss+xml" />
+	<lastBuildDate>Mon, 11 Sep 2023 00:00:00 +0000</lastBuildDate>
+	
+	<item>
+		<title>Postgresql Replication - Streaming 구성</title>
+        
+        
+            <description>&lt;h1 id=&quot;postgres-replication---streaming-구성&quot;&gt;postgres replication - streaming 구성&lt;/h1&gt;
+&lt;h2 id=&quot;목차&quot;&gt;목차&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;서버 정보 및 복제 대상&lt;/li&gt;
+  &lt;li&gt;Streaming 방식&lt;/li&gt;
+  &lt;li&gt;Primary Server 서버 설정&lt;/li&gt;
+  &lt;li&gt;Standby Server 서버 설정&lt;/li&gt;
+  &lt;li&gt;결과 확인&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        
+        <pubDate>Mon, 11 Sep 2023 00:00:00 +0000</pubDate>
+        <link>https://Wins-Cloud-MSP.github.io/dbms/2023/09/11/Postgresql-Replication-Streaming-%EA%B5%AC%EC%84%B1.html</link>
+        <guid isPermaLink="true">https://Wins-Cloud-MSP.github.io/dbms/2023/09/11/Postgresql-Replication-Streaming-%EA%B5%AC%EC%84%B1.html</guid>
+      </item>
+    
+	<item>
+		<title>Terraform 설치 및 사용 가이드</title>
+        
+        
+            <description>&lt;h1&gt; Terraform GuideBook. &lt;/h1&gt;
+&lt;p&gt;Terraform 설치 및 사용 가이드를 기술합니다.&lt;/p&gt;
+</description>
+        
+        <pubDate>Mon, 04 Sep 2023 00:00:00 +0000</pubDate>
+        <link>https://Wins-Cloud-MSP.github.io/terraform/2023/09/04/Terraform-%EA%B0%80%EC%9D%B4%EB%93%9C.html</link>
+        <guid isPermaLink="true">https://Wins-Cloud-MSP.github.io/terraform/2023/09/04/Terraform-%EA%B0%80%EC%9D%B4%EB%93%9C.html</guid>
+      </item>
+    
+	<item>
+		<title>MarkDown 사용법</title>
+        
+        
+            <description>&lt;h1 id=&quot;markdown-사용법&quot;&gt;MarkDown 사용법&lt;/h1&gt;
+&lt;h2 id=&quot;개요&quot;&gt;개요&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;장점&lt;/li&gt;
+  &lt;li&gt;단점&lt;/li&gt;
+  &lt;li&gt;사용법
+    &lt;ol&gt;
+      &lt;li&gt;제목(Header)&lt;/li&gt;
+      &lt;li&gt;수평선(Horizontal Rules)&lt;/li&gt;
+      &lt;li&gt;줄바꿈(Line Breaks)&lt;/li&gt;
+      &lt;li&gt;강조(Emphasis)&lt;/li&gt;
+      &lt;li&gt;인용(Blockquotes)&lt;/li&gt;
+      &lt;li&gt;목록(List)&lt;/li&gt;
+      &lt;li&gt;특수문자 표현(Backslash Escapes)&lt;/li&gt;
+      &lt;li&gt;이미지(img)&lt;/li&gt;
+      &lt;li&gt;링크(Links)&lt;/li&gt;
+      &lt;li&gt;코드 블록(Code Block)&lt;/li&gt;
+      &lt;li&gt;표(Table)&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;GitHub 블로그 포스팅&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        
+        <pubDate>Mon, 21 Aug 2023 00:00:00 +0000</pubDate>
+        <link>https://Wins-Cloud-MSP.github.io/markdown/2023/08/21/MarkDown-%EC%82%AC%EC%9A%A9%EB%B2%95.html</link>
+        <guid isPermaLink="true">https://Wins-Cloud-MSP.github.io/markdown/2023/08/21/MarkDown-%EC%82%AC%EC%9A%A9%EB%B2%95.html</guid>
+      </item>
+    
+	<item>
+		<title>PostSQL 설치 가이드</title>
+        
+        
+            <description>&lt;h1 id=&quot;postgresql-설치&quot;&gt;Postgresql 설치&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://www.postgresql.org/download/ 해당 사이트에서 환경에 맞게 선택 &lt;br /&gt;
+&lt;img src=&quot;https://github.com/JunPyo0117/my-history/assets/80608601/774defee-fb65-473e-9f0f-3490c1bf84bb&quot; alt=&quot;image&quot; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        
+        <pubDate>Fri, 11 Aug 2023 00:00:00 +0000</pubDate>
+        <link>https://Wins-Cloud-MSP.github.io/dbms/2023/08/11/PostSQL-%EC%84%A4%EC%B9%98-%EA%B0%80%EC%9D%B4%EB%93%9C.html</link>
+        <guid isPermaLink="true">https://Wins-Cloud-MSP.github.io/dbms/2023/08/11/PostSQL-%EC%84%A4%EC%B9%98-%EA%B0%80%EC%9D%B4%EB%93%9C.html</guid>
+      </item>
+    
+  </channel>
+</rss>

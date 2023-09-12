@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-translate-customization" content="108d9124921d80c3-80e20d618ff053c8-g4f02ec6f3dba68b7-c">
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Postgresql Replication - Streaming 구성 | 우리들의 클라우드 기술 블로그^^</title>
+<meta name="generator" content="Jekyll v4.3.2">
+<meta property="og:title" content="Postgresql Replication - Streaming 구성">
+<meta name="author" content="GitHub User">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="postgres replication - streaming 구성 목차 서버 정보 및 복제 대상 Streaming 방식 Primary Server 서버 설정 Standby Server 서버 설정 결과 확인">
+<meta property="og:description" content="postgres replication - streaming 구성 목차 서버 정보 및 복제 대상 Streaming 방식 Primary Server 서버 설정 Standby Server 서버 설정 결과 확인">
+<link rel="canonical" href="https://wins-cloud-msp.github.io/jekyll-theme-yat/dbms/2023/09/11/Postgresql-Replication-Streaming-%EA%B5%AC%EC%84%B1.html">
+<meta property="og:url" content="https://wins-cloud-msp.github.io/jekyll-theme-yat/dbms/2023/09/11/Postgresql-Replication-Streaming-%EA%B5%AC%EC%84%B1.html">
+<meta property="og:site_name" content="우리들의 클라우드 기술 블로그^^">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-09-11T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="Postgresql Replication - Streaming 구성">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"GitHub User"},"dateModified":"2023-09-11T00:00:00+00:00","datePublished":"2023-09-11T00:00:00+00:00","description":"postgres replication - streaming 구성 목차 서버 정보 및 복제 대상 Streaming 방식 Primary Server 서버 설정 Standby Server 서버 설정 결과 확인","headline":"Postgresql Replication - Streaming 구성","mainEntityOfPage":{"@type":"WebPage","@id":"https://wins-cloud-msp.github.io/jekyll-theme-yat/dbms/2023/09/11/Postgresql-Replication-Streaming-%EA%B5%AC%EC%84%B1.html"},"url":"https://wins-cloud-msp.github.io/jekyll-theme-yat/dbms/2023/09/11/Postgresql-Replication-Streaming-%EA%B5%AC%EC%84%B1.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="icon" href="">
+  <link rel="canonical" href="https://Wins-Cloud-MSP.github.io">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-noto-sans@0.0.72/index.min.css">
+  <link rel="stylesheet" href="/jekyll-theme-yat/assets/css/main.css">
+  <script src="/jekyll-theme-yat/assets/js/main.js"></script><link type="application/atom+xml" rel="alternate" href="https://wins-cloud-msp.github.io/jekyll-theme-yat/feed.xml" title="우리들의 클라우드 기술 블로그^^">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+<!-- and it's easy to individually load additional languages -->
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/go.min.js" async></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Init highlight js
+document.addEventListener('DOMContentLoaded', function(event) {
+  var els = document.querySelectorAll('pre code')
+
+  function addLangData(block) {
+    var outer = block.parentElement.parentElement.parentElement;
+    var lang = block.getAttribute('data-lang');
+    for (var i = 0; i < outer.classList.length; i++) {
+      var cls = outer.classList[i];
+      if (cls.startsWith('language-')) {
+        lang = cls;
+        break;
+      }
+    }
+    if (!lang) {
+      cls = block.getAttribute('class');
+      lang = cls ? cls.replace('hljs ', '') : '';
+    }
+    if (lang.startsWith('language-')) {
+      lang = lang.substr(9);
+    }
+    block.setAttribute('class', 'hljs ' + lang);
+    block.parentNode.setAttribute('data-lang', lang);
+  }
+
+  function addBadge(block) {
+    var enabled = ('true' || 'true').toLowerCase();
+    if (enabled == 'true') {
+      var pre = block.parentElement;
+      pre.classList.add('badge');
+    }
+  }
+
+  function handle(block) {
+    addLangData(block);
+    addBadge(block)
+    hljs.highlightBlock(block);
+  }
+
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    handle(el);
+  }
+});
+</script>
+
+<style>
+  /* code language badge */
+  pre.badge::before {
+    content: attr(data-lang);
+    color: #fff;
+    background-color: #ff4e00;
+    padding: 0 .5em;
+    border-radius: 0 2px;
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 32px;
+    display: inline-block;
+    position: absolute;
+    right: 0;
+  }
+
+  /* fix wrong badge display for firefox browser */
+  code > table pre::before {
+    display: none;
+  }
+</style>
+<script src="//cdnjs.cloudflare.com/ajax/libs/photoswipe/5.3.7/umd/photoswipe-lightbox.umd.min.js" async></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/photoswipe/5.3.7/umd/photoswipe.umd.min.js" async></script>
+<link href="//cdnjs.cloudflare.com/ajax/libs/photoswipe/5.3.7/photoswipe.min.css" rel="stylesheet">
+<style>
+  .pswp .pswp__container .pswp__img {
+    background-color: white;
+  }
+</style>
+
+<script>
+  function initPhotoSwipe() {
+    let customOptions = {};
+
+    try {
+      const data = ``.replaceAll("=>", ":");
+      customOptions = JSON.parse(data);
+    } catch (e) {
+      console.error("Invalid custom photo previewer options! " + e.message);
+    }
+
+    // Define object and gallery options
+    const options = Object.assign(
+      {
+        gallery: "section.main",
+        children: "a.photo-swipe",
+        photo_scale: 2,
+        // dynamic import is not supported in UMD version
+        pswpModule: PhotoSwipe,
+      },
+      customOptions
+    );
+
+    const galleryEl = document.querySelector(options.gallery);
+    if (!galleryEl) {
+      return;
+    }
+
+    const imgEls = [];
+    const els = galleryEl.querySelectorAll("img:not(.emoji)");
+    els.forEach((el) => {
+      if (!imgEls.includes(el)) {
+        imgEls.push(el);
+      }
+    });
+
+    if (imgEls.length === 0) {
+      return;
+    }
+
+    imgEls.forEach((imgEl) => {
+      imgEl.outerHTML = `
+      <a class="photo-swipe"
+        href="${imgEl.src}"
+        data-pswp-width="${
+          Math.max(imgEl.naturalWidth, imgEl.width) * options.photo_scale
+        }"
+        data-pswp-height="${
+          Math.max(imgEl.naturalHeight, imgEl.height) * options.photo_scale
+        }"
+        data-pswp-caption="${imgEl.getAttribute("caption") || imgEl.alt}"
+        target="_blank">
+        ${imgEl.outerHTML}
+      </a>`;
+    });
+
+    // Initialize PhotoSwipe 5
+    var lightbox = new PhotoSwipeLightbox(options);
+
+    lightbox.init();
+  }
+
+  window.addEventListener("load", initPhotoSwipe);
+</script>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<header class="site-header " role="banner">
+
+  <div class="wrapper">
+    <div class="site-header-inner">
+<span class="site-brand"><a class="site-brand-inner" rel="author" href="/jekyll-theme-yat/">
+  <img class="site-favicon" title="우리들의 클라우드 기술 블로그^^" src="" onerror="this.style.display='none'">
+  우리들의 클라우드 기술 블로그^^
+</a>
+</span><nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger">
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewbox="0 0 18 15" width="18px" height="15px">
+                <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+<a class="page-link" href="/jekyll-theme-yat/about.html">ABOUT</a><a class="page-link" href="/jekyll-theme-yat/archives.html">ARCHIVES</a><a class="page-link" href="/jekyll-theme-yat/categories.html">CATEGORIES</a><a class="page-link" href="/jekyll-theme-yat/">HOME</a><a class="page-link" href="/jekyll-theme-yat/tags.html">TAGS</a>
+
+
+
+
+
+
+
+
+
+<span class="page-link">
+
+
+
+<div id="google_translate_element" style="display: none;">
+</div>
+
+<span class="ct-language">
+  <ul class="list-unstyled ct-language-dropdown">
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="en">
+          
+          <img src="https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png" title="English">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="fr">
+          
+          <img src="https://cdn.countryflags.com/thumbs/france/flag-400.png" title="French">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="zh-CN">
+          
+          <img src="https://cdn.countryflags.com/thumbs/china/flag-400.png" title="Chinese(Simple)">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ja">
+          
+          <img src="https://cdn.countryflags.com/thumbs/japan/flag-400.png" title="Japanese">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ko">
+          
+          <img src="https://cdn.countryflags.com/thumbs/south-korea/flag-400.png" title="Korean">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ru">
+          
+          <img src="https://cdn.countryflags.com/thumbs/russia/flag-400.png" title="Russian">
+          
+        </a>
+      </li>
+    
+  </ul>
+</span>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    autoDisplay: false,
+    layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+  }, 'google_translate_element');
+
+  // Links to cross-origin destinations are unsafe
+  var gll = document.getElementsByClassName('goog-logo-link')[0];
+  if (gll) {
+    gll.setAttribute('rel', 'noopener');
+  }
+
+  function restoreLang() {
+    var iframe = document.getElementsByClassName('goog-te-banner-frame')[0];
+    if (!iframe) return;
+
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    var restore_el = innerDoc.getElementsByTagName("button");
+
+    for (var i = 0; i < restore_el.length; i++) {
+      if (restore_el[i].id.indexOf("restore") >= 0) {
+        restore_el[i].click();
+        var close_el = innerDoc.getElementsByClassName("goog-close-link");
+        close_el[0].click();
+        return;
+      }
+    }
+  }
+
+  function triggerHtmlEvent(element, eventName) {
+    var event;
+    if (document.createEvent) {
+      event = document.createEvent('HTMLEvents');
+      event.initEvent(eventName, true, true);
+      element.dispatchEvent(event);
+    } else {
+      event = document.createEventObject();
+      event.eventType = eventName;
+      element.fireEvent('on' + event.eventType, event);
+    }
+  }
+
+  var googleCombo = document.querySelector("select.goog-te-combo");
+  var langSelect = document.querySelector('.ct-language');
+  langSelect.addEventListener('click', function(event) {
+    if (!event.target) {
+      return;
+    }
+
+    var selected = document.querySelector('.ct-language .ct-language-selected');
+    if (selected) {
+      selected.classList.remove('ct-language-selected');
+    }
+
+    var target = event.target;
+    while (target && target !== langSelect ) {
+      if (target.matches('.lang-select')) {
+        break;
+      }
+      target = target.parentElement;
+    }
+
+    if (target && target.matches('.lang-select')) {
+      var lang = target.getAttribute('data-lang');
+      if (googleCombo.value == lang) {
+        restoreLang();
+      } else {
+        target.parentElement.classList.add('ct-language-selected');
+        googleCombo.value = lang;
+        triggerHtmlEvent(googleCombo, 'change');
+      }
+    }
+
+    event.preventDefault();
+  });
+}
+</script>
+
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
+</span>
+</div>
+        </nav>
+</div>
+  </div>
+</header>
+
+<script>
+  function initHeader() {
+    var lastScrollY = getScrollPos().y;
+    var documentElement = document.documentElement;
+
+    function storeScrollData() {
+      var y = getScrollPos().y;var scrollStatus = "";
+
+      if (y <= 0) {
+        scrollStatus = "top";
+      } else if ((window.innerHeight + y) >= document.body.offsetHeight) {
+        scrollStatus = "bottom";
+      } else {
+        var isScrollDown = (y - lastScrollY > 0) ? true : false;
+        scrollStatus = isScrollDown ? "down" : "up";
+      }
+
+      lastScrollY = y;
+      documentElement.setAttribute("data-scroll-status", scrollStatus);
+    }
+
+    window.addEventListener('scroll', function(e) {
+      storeScrollData();
+    });
+
+    storeScrollData();
+  }
+  document.addEventListener('DOMContentLoaded', initHeader);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  function hashLocate(hashValue) {
+    hashValue = hashValue.replace(/^.*#h-/, '');
+    hashValue = decodeURIComponent(hashValue);
+    var element = document.getElementById(hashValue);
+
+    if (!element) {
+      return;
+    }
+
+    var header = document.querySelector('header.site-header');
+    var headerRect = header.getBoundingClientRect();
+    var headerTop = Math.floor(headerRect.top);
+    var headerHeight = Math.floor(headerRect.height);
+    var scrollPos = getScrollPos();
+    var offsetY = element.offsetTop - (headerTop + headerHeight + 20);
+
+    if (offsetY == scrollPos.y) {
+      return;
+    }
+
+    if (headerTop == 0  && offsetY > scrollPos.y) {
+      offsetY += headerHeight + 2;
+    } else if (headerTop < 0  && offsetY < scrollPos.y) {
+      offsetY -= headerHeight - 2;
+    }
+
+    smoothScrollTo(offsetY);
+  }
+
+  // The first event occurred
+  window.addEventListener('load', function(event) {
+    if (window.location.hash) {
+      hashLocate(window.location.hash);
+    }
+  });
+
+  // The first event occurred
+  window.addEventListener('click', function(event) {
+    if (event.target.tagName.toLowerCase() == 'a') {
+      hashLocate(event.target.getAttribute('href'));
+    }
+  });
+</script>
+<div class="theme-toggle">
+  <input type="checkbox" id="theme-switch">
+  <label for="theme-switch">
+    <div class="toggle"></div>
+    <div class="names">
+      <p class="light">Light</p>
+      <p class="dark">Dark</p>
+    </div>
+  </label>
+</div>
+
+
+
+
+<script>
+  (function() {
+    var sw = document.getElementById('theme-switch');
+    var html = document.getElementsByTagName('html')[0];
+    var nightModeOption = ('auto' || 'auto').toLowerCase();
+    var storage = nightModeOption === 'manual'
+        ? localStorage
+        : sessionStorage;
+    var themeData = loadThemeData();
+
+    function saveThemeData(data) {
+      storage.setItem('theme', JSON.stringify(data));
+    }
+
+    function loadThemeData() {
+      var data = storage.getItem('theme');
+      try {
+        data = JSON.parse(data ? data : '');
+      } catch(e) {
+        data = { nightShift: undefined, autoToggleAt: 0 };
+        saveThemeData(data);
+      }
+      return data;
+    }
+
+    function handleThemeToggle(nightShift) {
+      themeData.nightShift = nightShift;
+      saveThemeData(themeData);
+      html.dataset.theme = nightShift ? 'dark' : 'light';
+      setTimeout(function() {
+        sw.checked = nightShift ? true : false;
+      }, 50);
+    }
+
+    function autoThemeToggle() {
+      // Next time point of theme toggle
+      var now = new Date();
+      var toggleAt = new Date();
+      var hours = now.getHours();
+      var nightShift = hours >= 19 || hours <=7;
+
+      if (nightShift) {
+        if (hours > 7) {
+          toggleAt.setDate(toggleAt.getDate() + 1);
+        }
+        toggleAt.setHours(7);
+      } else {
+        toggleAt.setHours(19);
+      }
+
+      toggleAt.setMinutes(0);
+      toggleAt.setSeconds(0);
+      toggleAt.setMilliseconds(0)
+
+      var delay = toggleAt.getTime() - now.getTime();
+
+      // auto toggle theme mode
+      setTimeout(function() {
+        handleThemeToggle(!nightShift);
+      }, delay);
+
+      return {
+        nightShift: nightShift,
+        toggleAt: toggleAt.getTime()
+      };
+    }
+
+    // Listen the theme toggle event
+    sw.addEventListener('change', function(event) {
+      handleThemeToggle(event.target.checked);
+    });
+
+    if (nightModeOption == 'auto') {
+      var data = autoThemeToggle();
+
+      // Toggle theme by local setting
+      if (data.toggleAt > themeData.autoToggleAt) {
+        themeData.autoToggleAt = data.toggleAt;
+        handleThemeToggle(data.nightShift);
+      } else {
+        handleThemeToggle(themeData.nightShift);
+      }
+    } else if (nightModeOption == 'manual') {
+      handleThemeToggle(themeData.nightShift);
+    } else {
+      var nightShift = themeData.nightShift;
+      if (nightShift === undefined) {
+        nightShift = nightModeOption === 'on';
+      }
+      handleThemeToggle(nightShift);
+    }
+  })();
+</script>
+<div id="click-to-top" class="click-to-top">
+  <i class="fa fa-arrow-up"></i>
+</div>
+<script>
+  (function () {
+    const clickToTop = document.getElementById('click-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        clickToTop.classList.add('show')
+      }else {
+        clickToTop.classList.remove('show')
+      }
+    });
+    clickToTop.addEventListener('click', () => {
+      window.smoothScrollTo(0);
+    });
+  })();
+</script>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="framework">
+  <section class="main">
+
+     <div class="post">
+  <section>
+
+
+
+
+
+
+
+
+
+<header class="post-header">
+  <h1 class="post-title p-name" itemprop="name headline">Postgresql Replication - Streaming 구성</h1>
+  <h2 class="post-subtitle">Postgresql Streaming</h2>
+
+  <div class="post-meta">
+    <time class="dt-published" datetime="2023-09-11T00:00:00+00:00" itemprop="datePublished"><i class="fa fa-calendar"></i> Sep 11, 2023
+    </time>
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <span class="post-reading-time left-vsplit"><i class="fa fa-clock-o"></i> About 3 mins</span>
+  </div>
+<div class="post-tags">
+<a class="post-tag" href="/jekyll-theme-yat/tags.html#DBMS">#DBMS</a><a class="post-tag" href="/jekyll-theme-yat/tags.html#PostgreSQL">#PostgreSQL</a>
+</div></header>
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="post-content e-content" itemprop="articleBody">
+
+      <h1 id="postgres-replication---streaming-구성">postgres replication - streaming 구성</h1>
+<h2 id="목차">목차</h2>
+<ol>
+  <li>서버 정보 및 복제 대상</li>
+  <li>Streaming 방식</li>
+  <li>Primary Server 서버 설정</li>
+  <li>Standby Server 서버 설정</li>
+  <li>결과 확인</li>
+</ol>
+
+<h2 id="0-서버-정보-및-복제-대상">0. 서버 정보 및 복제 대상</h2>
+
+<h3 id="서버-정보">서버 정보</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Replication</th>
+      <th>Primary Server</th>
+      <th>Standby Server</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Streaming</td>
+      <td>CentOS 7.9/Postgresql 14</td>
+      <td>CentOS 7.9/Postgresql 14</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>복제 대상: DB, 테이블, 시퀀스, 뷰, 함수 등 Primary DB에 있는 정보들이 Standby DB로 복제</p>
+
+<h2 id="1-streaming-방식">1. Streaming 방식</h2>
+<ul>
+  <li>Streaming 복제는 PostgreSQL에서 가장 일반적으로 사용되는 방식</li>
+  <li>Primary Server 서버에서 변경된 로그 데이터를 Standby Server 서버로 스트리밍</li>
+  <li>PostgreSQL은 데이터 변경 사항을 WAL 파일에 로그로 기록</li>
+  <li>로그 파일은 변경 사항이 발생할 때마다 생성되며 변경 사항을 안전하게 저장</li>
+  <li>Standby 서버는 변경 로그를 실시간으로 적용하여 마스터 서버와 동일한 데이터베이스를 유지</li>
+</ul>
+
+<h2 id="2-primary-서버-설정">2. Primary 서버 설정</h2>
+<p>postgres 동작 확인 <code class="language-plaintext highlighter-rouge">ps -ef | grep postgres</code><br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/51628477-a788-4d56-89ac-31b105939b77" alt="image"></p>
+
+<p><code class="language-plaintext highlighter-rouge">su - postgre -c 'psql'</code> postgresql에 접속 후 Replication을 위한 User 생성<br>
+<code class="language-plaintext highlighter-rouge">CREATE USER {USER NAME} REPLICATION;</code><br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/49b3bd7d-a872-46df-a67d-db86b5ece825" alt="image"></p>
+
+<p>Standby DB에서 Primary DB로 접속하기 위해 <code class="language-plaintext highlighter-rouge">vi /var/lib/pgsql/14/data/postgresql.conf</code> 파일에서<br>
+listen_address = ‘localhost’ -&gt; listen_address = ‘*’ 수정<br>
+wal_level = replica 주석 제거<br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/a64fec3b-efd0-470a-a9b7-f920d1c2d914" alt="image"><br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/c74a96d1-0ee9-4508-9331-d0b9123ecbcc" alt="image"></p>
+
+<p><code class="language-plaintext highlighter-rouge">vi /var/lib/pgsql/14/data/pg_hba.conf</code> 파일에 Standby 서버의 IP와 생성한 DB 유저를 지정(Replication User)<br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/f4b42e6e-012d-4966-b70f-ae0bfafab647" alt="image"></p>
+
+<p><code class="language-plaintext highlighter-rouge">systemctl restart postgresql-14</code> 설정 파일 변경으로 Postgresql 서비스 재시작</p>
+
+<h2 id="3-standby-서버-설정">3. Standby 서버 설정</h2>
+<p>postgres 동작 확인 <code class="language-plaintext highlighter-rouge">ps -ef | grep postgres</code>  <br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/862a1e0a-dc0b-4ffb-879c-acf1a8a02277" alt="image"></p>
+
+<p><code class="language-plaintext highlighter-rouge">systemctl stop postgresql-14</code> 명령어로 Postgres 중지<br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/42e3bdb3-ada7-4f41-bfbc-043a42aa7c7b" alt="image"></p>
+
+<p>Standby DB를 Primary DB의 복제본으로 만들기 위해 해당 명령어로 기존 데이터 삭제   <code class="language-plaintext highlighter-rouge">rm -rf /var/lib/pgsql/14/data/*</code><br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/5246cd4c-7476-4200-beff-efdc071a754d" alt="image"></p>
+
+<p><code class="language-plaintext highlighter-rouge">su - postgres</code>에 사용자 전환 후<br>
+<code class="language-plaintext highlighter-rouge">pg_basebackup -h {Primary IP 주소} -U {Replication 유저명} --checkpoint=fast -D /var/lib/pgsql/14/data/ -R --slot={slot 이름} -C</code><br>
+명령어를 통해 Primary의 DB 데이터 복사</p>
+
+<ol>
+  <li>
+<code class="language-plaintext highlighter-rouge">-D</code>또는 <code class="language-plaintext highlighter-rouge">--pgdata</code>:
+    <ul>
+      <li>복제된 데이터를 저장할 디렉토리를 지정</li>
+    </ul>
+  </li>
+  <li>
+<code class="language-plaintext highlighter-rouge">U</code> 또는 <code class="language-plaintext highlighter-rouge">--username</code>:
+    <ul>
+      <li>PostgreSQL 데이터베이스에 연결할 때 사용할 사용자 이름을 지정</li>
+    </ul>
+  </li>
+  <li>
+<code class="language-plaintext highlighter-rouge">-h</code> 또는 <code class="language-plaintext highlighter-rouge">--host</code>:
+    <ul>
+      <li>PostgreSQL 서버의 호스트 이름 또는 IP 주소를 지정</li>
+    </ul>
+  </li>
+  <li>
+<code class="language-plaintext highlighter-rouge">--checkpoint=fast</code> 또는 <code class="language-plaintext highlighter-rouge">--checkpoint=spread</code>:
+    <ul>
+      <li>백업을 시작하기 전에 PostgreSQL에서 자동으로 체크포인트를 수행할지 여부를 지정</li>
+    </ul>
+  </li>
+  <li>
+<code class="language-plaintext highlighter-rouge">-R</code>:
+    <ul>
+      <li>스트림 복제 기능을 활성화하는 옵션, 스트림 복제를 위한 데이터 디렉토리 복제를 수행</li>
+    </ul>
+  </li>
+  <li>
+<code class="language-plaintext highlighter-rouge">--slot=some_name</code>:
+    <ul>
+      <li>Replication Slot 설정, 스트리밍 복제 중에 사용하는 슬롯의 이름을 지정하는 옵션</li>
+      <li>슬롯을 사용하여 Primary에서 변경된 데이터를 Standby로 전달</li>
+    </ul>
+  </li>
+  <li>
+<code class="language-plaintext highlighter-rouge">-C</code>:
+    <ul>
+      <li>백업 중에 파일 압축을 활성화하는 옵션</li>
+    </ul>
+  </li>
+</ol>
+
+<p><img src="https://github.com/JunPyo0117/my-note/assets/80608601/ba074317-0d1d-45e7-b793-72b267696613" alt="image"></p>
+
+<p><code class="language-plaintext highlighter-rouge">ls -l /var/lib/pgsql/14/data/</code> Primary에서 복사된 데이터 확인 가능<br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/aefb3b41-6371-4b7e-b5a9-0e544083b5fd" alt="image"></p>
+
+<p><code class="language-plaintext highlighter-rouge">systemctl start postgresql-14</code> postgresql 서비스 시작</p>
+
+<h2 id="4-결과-확인">4. 결과 확인</h2>
+<p><code class="language-plaintext highlighter-rouge">ps -ef | grep postgres</code> 명령어로 각 서버의 sender, receiver 프로세스 확인<br>
+primary 서버<br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/0ad08468-5a93-4128-9e94-8f418d9f24c6" alt="image"></p>
+
+<p>standby 서버<br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/2dcb4875-6908-433c-bf56-c00ca9e6e41b" alt="image"></p>
+
+<p>Replication 상태를 확인 가능<br>
+Primary에서 <code class="language-plaintext highlighter-rouge">select * from pg_stat_replication;</code><br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/313ba8d4-0c39-4d0f-839a-1de762f40043" alt="image"></p>
+
+<p>Standby에서 <code class="language-plaintext highlighter-rouge">select * from pg_stat_wal_receiver;</code><br>
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/3035c70c-9bd7-42e0-a0b8-0d1148b68491" alt="image"></p>
+
+<h3 id="primary-서버에-db생성-및-테이블-추가">Primary 서버에 DB생성 및 테이블 추가</h3>
+<ul>
+  <li>
+<code class="language-plaintext highlighter-rouge">su - postgres</code> 사용자 변경</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">createdb replication</code> DB 생성</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">\c replication</code> DB연결 후 테이블 생성</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">INSERT INTO developers VALUES(1, '2023-09-11', '"c++"');</code> 데이터 추가
+<img src="https://github.com/JunPyo0117/my-note/assets/80608601/10508ae8-8bca-4163-82d8-a42c96a404ec" alt="image">
+</li>
+</ul>
+
+<h3 id="standby-서버에서-데이터-replication-확인">Standby 서버에서 데이터 Replication 확인</h3>
+<p><img src="https://github.com/JunPyo0117/my-note/assets/80608601/14a758d6-ac03-48d9-bb68-26b903314158" alt="image"></p>
+
+
+
+    </div>
+
+</article>
+<div class="post-nav">
+<a class="previous" href="/jekyll-theme-yat/terraform/2023/09/04/Terraform-%EA%B0%80%EC%9D%B4%EB%93%9C.html" title="Terraform 설치 및 사용 가이드">Terraform 설치 및 사용 가이드</a><span></span>
+</div>
+<div class="post-related">
+      <div>Related Articles</div>
+      <ul>
+        <li><a class="post-link" href="/jekyll-theme-yat/dbms/2023/09/11/Postgresql-Replication-Streaming-%EA%B5%AC%EC%84%B1.html" title="">Postgresql Replication - Streaming 구성</a></li>
+<li><a class="post-link" href="/jekyll-theme-yat/terraform/2023/09/04/Terraform-%EA%B0%80%EC%9D%B4%EB%93%9C.html" title="">Terraform 설치 및 사용 가이드</a></li>
+<li><a class="post-link" href="/jekyll-theme-yat/dbms/2023/08/11/PostSQL-%EC%84%A4%EC%B9%98-%EA%B0%80%EC%9D%B4%EB%93%9C.html" title="">PostSQL 설치 가이드</a></li>
+<li><a class="post-link" href="/jekyll-theme-yat/markdown/2023/08/21/MarkDown-%EC%82%AC%EC%9A%A9%EB%B2%95.html" title="">MarkDown 사용법</a></li>
+</ul>
+    </div>
+<div class="post-comments"></div></section>
+</div>
+
+
+  </section>
+  <section class="sidebar" style="margin-left: 15px;">
+    <!-- Get sidebar items --><style type="text/css" media="screen">
+.post-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+</style>
+
+<div class="post-menu">
+  <div class="post-menu-title">TOC</div>
+  <div class="post-menu-content"></div>
+</div>
+
+<script>
+  function generateContent() {
+    var menu = document.querySelector(".post-menu");
+    var menuContent =  menu.querySelector(".post-menu-content");
+    var headings = document.querySelector(".post-content").querySelectorAll("h2, h3, h4, h5, h6");
+
+    // Hide menu when no headings
+    if (headings.length === 0) {
+      return menu.style.display = "none";
+    }
+
+    // Generate post menu
+    var menuHTML = '';
+    for (var i = 0; i < headings.length; i++) {
+      var h = headings[i];
+      menuHTML += (
+        '<li class="h-' + h.tagName.toLowerCase() + '">'
+        + '<a href="#h-' + h.getAttribute('id') + '">' + h.textContent + '</a></li>');
+    }
+
+    menuContent.innerHTML = '<ul>' + menuHTML + '</ul>';
+
+    // The header element
+    var header = document.querySelector('header.site-header');
+
+    function doMenuCollapse(index, over_items) {
+      var items = menuContent.firstChild.children;
+
+      if (over_items == undefined) {
+        over_items = 20;
+      }
+
+      if (items.length < over_items) {
+        return;
+      }
+
+      var activeItem = items[index];
+      var beginItem = activeItem
+      var endItem = activeItem
+      var beginIndex = index;
+      var endIndex = index + 1;
+      while (beginIndex >= 0
+        && !items[beginIndex].classList.contains('h-h2')) {
+        beginIndex -= 1;
+      }
+      while (endIndex < items.length
+        && !items[endIndex].classList.contains('h-h2')) {
+        endIndex += 1;
+      }
+      for (var i = 0; i < beginIndex; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+      for (var i = beginIndex + 1; i < endIndex; i++) {
+        item = items[i]
+        // if (!item.classList.contains('h-h2')) {
+          item.style.display = '';
+        // }
+      }
+      for (var i = endIndex; i < items.length; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+    }
+
+    // Init menu collapsed
+    doMenuCollapse(-1);
+
+    // Active the menu item
+    window.addEventListener('scroll', function (event) {
+      var lastActive = menuContent.querySelector('.active');
+      var changed = true;
+      var activeIndex = -1;
+      for (var i = headings.length - 1; i >= 0; i--) {
+        var h = headings[i];
+        var headingRect = h.getBoundingClientRect();
+        var headerRect = header.getBoundingClientRect();
+        var headerTop = Math.floor(headerRect.top);
+        var headerHeight = Math.floor(headerRect.height);
+        var headerHeight = headerTop + headerHeight + 20;
+        if (headingRect.top <= headerHeight) {
+          var id = 'h-' + h.getAttribute('id');
+          var a = menuContent.querySelector('a[href="#' + id  + '"]');
+          var curActive = a.parentNode;
+          if (curActive) {
+            curActive.classList.add('active');
+            activeIndex = i;
+          }
+          if (lastActive == curActive) {
+            changed = false;
+          }
+          break;
+        }
+      }
+      if (changed) {
+        if (lastActive) {
+          lastActive.classList.remove('active');
+        }
+        doMenuCollapse(activeIndex);
+      }
+      event.preventDefault();
+    });
+  }
+  generateContent();
+</script>
+</section>
+</div>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/jekyll-theme-yat/"></data>
+
+  <div class="wrapper">
+    <div class="site-footer-inner">
+<div>Unpublished Work <span class="copyleft">©</span> 2017-2023 GitHub User</div>
+      <div>Powered by <a title="Jekyll is a simple, blog-aware, static site
+      generator." href="https://jekyllrb.com/">Jekyll</a> &amp; <a title="Yat, yet
+      another theme." href="https://github.com/jeffreytse/jekyll-theme-yat">Yat Theme</a>.</div>
+      <div class="footer-col rss-subscribe">Subscribe <a href="/jekyll-theme-yat/feed.xml">via RSS</a>
+</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
